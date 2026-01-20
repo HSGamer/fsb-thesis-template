@@ -1,4 +1,4 @@
-#import "../lib.typ": *
+#import "@preview/fsb-thesis:0.1.0": *
 
 #show: project.with(
   title: "Developing an Object Detection System for Drones",
@@ -6,6 +6,8 @@
   supervisors: ("Dr. Pham Van B",),
   abstract: [Abstract text...],
   acknowledgments: [Thanks...],
+  appendix: include "appendix.typ",
+  bibliography: bibliography("refs.bib"),
 )
 
 = Introduction
@@ -13,17 +15,3 @@ This is the main body.
 
 = Methodology
 More main body content.
-
-// --- 1. MANUAL BIBLIOGRAPHY ---
-// Place this here so it appears BEFORE appendices
-#pagebreak()
-#bibliography("refs.bib", title: "References", style: "ieee")
-
-// --- 2. SWITCH TO APPENDIX MODE ---
-#show: appendix
-
-= Survey Data
-This is now "Appendix A: Survey Data". The heading styling is automatically updated.
-
-= Code Listings
-This is "Appendix B: Code Listings".

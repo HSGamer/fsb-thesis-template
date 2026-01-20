@@ -2,10 +2,10 @@
 name = "fsb-thesis"
 version = "0.1.0"
 entrypoint = "lib.typ"
-authors = ["hsgamer"]
+authors = ["HSGamer"]
 license = "MIT"
 description = "A thesis template for FSB (FPT School of Business and Technology) students."
-repository = "https://github.com/hsgamer/fsb-thesis-template"
+repository = "https://github.com/HSGamer/fsb-thesis-template"
 categories = ["thesis", "report"]
 disciplines = ["computer-science", "engineering"]
 

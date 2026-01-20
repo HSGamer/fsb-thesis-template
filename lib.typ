@@ -10,9 +10,9 @@
   abstract: [],
   acknowledgments: [],
   // We keep this optionally, but for full control you can place it manually
-  bibliography-file: none,
-  bib-style: "ieee",
-  body
+  bibliography: none,
+  appendix: [],
+  body,
 ) = {
   // --- 1. Global Setup ---
   set document(author: author, title: title)
@@ -60,9 +60,13 @@
       #grid(
         columns: (auto, auto),
         gutter: 1em,
-        ..supervisors.enumerate().map(((i, name)) => (
-          [#(i + 1).], [#name]
-        )).flatten()
+        ..supervisors
+          .enumerate()
+          .map(((i, name)) => (
+            [#(i + 1).],
+            [#name],
+          ))
+          .flatten()
       )
     ]
     #v(2cm)
@@ -97,21 +101,39 @@
   // --- 6. Front Matter ---
   set page(numbering: "i")
   counter(page).update(1)
-  
+
   outline(title: "Table of Contents", indent: auto)
   pagebreak()
-  
-  outline(title: "List of Tables", target: figure.where(kind: table))
-  pagebreak()
-  
-  outline(title: "List of Figures", target: figure.where(kind: image))
-  pagebreak()
+
+  context {
+    let figs = query(figure.where(kind: table))
+    if figs.len() > 0 {
+      outline(title: "List of Tables", target: figure.where(kind: table))
+      pagebreak()
+    }
+  }
+
+  context {
+    let figs = query(figure.where(kind: image))
+    if figs.len() > 0 {
+      outline(title: "List of Figures", target: figure.where(kind: image))
+      pagebreak()
+    }
+  }
+
+  context {
+    let figs = query(figure.where(kind: "appendix"))
+    if figs.len() > 0 {
+      outline(title: "List of Appendices", target: figure.where(kind: "appendix"))
+      pagebreak()
+    }
+  }
 
   // --- 7. Main Body ---
   set page(numbering: "1")
   counter(page).update(1)
   set heading(numbering: "1.1")
-  
+
   show heading.where(level: 1): it => {
     pagebreak(weak: true)
     v(2em)
@@ -126,29 +148,53 @@
   body
 
   // Note: Bibliography is now manual to allow correct ordering before Appendices
-  if bibliography-file != none {
+  if bibliography != none {
     pagebreak()
-    show bibliography: set text(size: 12pt)
-    bibliography(bibliography-file, title: "References", style: bib-style)
+    set text(size: 12pt)
+    bibliography
   }
-}
 
-// --- 8. The Appendix Rule ---
-// Call this function using `#show: appendix` in your body
-#let appendix(body) = {
-  // Reset counter and change numbering to Alpha (A.1)
-  counter(heading).update(0)
-  set heading(numbering: "A.1")
-  
-  // Custom display for Appendix Heading 1: "Appendix A: Title"
-  show heading.where(level: 1): it => {
-    pagebreak(weak: true)
-    v(2em)
-    align(center, text(size: 14pt, weight: "bold")[
-      Appendix #counter(heading).display("A"): #it.body
-    ])
-    v(1em)
+  // --- 8. Appendices ---
+  if appendix != [] and appendix != none {
+    // Reset counter and change numbering to Alpha (A.1)
+    counter(heading).update(0)
+    set heading(numbering: "A.1")
+
+    // Custom display for Appendix Heading 1: "Appendix A: Title"
+    show heading.where(level: 1): it => {
+      pagebreak(weak: true)
+      // Create a phantom figure to populate the List of Appendices
+      // We put it here so it registers with the correct page number
+      // but doesn't affect visual layout significantly (it's empty/hidden).
+      // Typst doesn't have a pure "phantom" figure yet, but we can hide it.
+      // However, standard `outline` picks up the caption.
+      // We want the outline to show "Appendix A: Title".
+      // The standard Outline for figures usually shows "Figure 1: Caption".
+      // We can force the caption to be what we want.
+
+      let appendix-number = counter(heading).display("A")
+      let entry-title = [Appendix #appendix-number: #it.body]
+
+      // We insert a hidden figure.
+      // using place so it doesn't take up layout space
+      // using hide so it is not visible
+      context {
+        place(hide(figure(
+          kind: "appendix",
+          supplement: "",
+          numbering: none,
+          caption: entry-title,
+          [],
+        )))
+      }
+
+      v(2em)
+      align(center, text(size: 14pt, weight: "bold")[
+        #entry-title
+      ])
+      v(1em)
+    }
+
+    appendix
   }
-  
-  body
 }
