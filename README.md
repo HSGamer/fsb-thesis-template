@@ -22,11 +22,15 @@ The `project` function takes the following arguments:
 - `supervisors`: A list of supervisor names.
 - `abstract`: Content for the abstract.
 - `acknowledgments`: Content for acknowledgments.
-- `bibliography-file`: (Optional, legacy) Path to bibliography file.
-- `bib-style`: Bibliography style (default: "ieee").
+- `bibliography`: Content for the bibliography (e.g.,
+  `bibliography("refs.bib")`).
+- `appendix`: Content for appendices (e.g., `include "appendix.typ"`).
 
 ## Local Development
 
 1. Clone this repository.
 2. Edit `lib.typ` to make changes to the template style.
 3. Test with `typst compile template/main.typ`.
+   - Note: usage in `template/main.typ` uses the package import format
+     `@preview/fsb-thesis:0.1.0`. To test locally, you may need to point it to
+     `../lib.typ` or use `--root`.
